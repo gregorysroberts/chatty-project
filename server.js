@@ -1,24 +1,29 @@
 var messages = ["first message here", "greg is my name"];
 
-var onRequest = function (req, response) {
-	console.log(req.method);
+var onRequest = function (request, response) {
+	console.log(request.method);
 	response.writeHead(200, {
 		'Connection': 'close',
 		'Content-type': 'text/html',
 		'Access-Control-Allow-Origin': '*'
 	});
 
-	if (req.method == 'GET') {
+	if (request.method == 'GET') {
 		response.end(JSON.stringify(messages));
-	} else if (req.method == 'POST') {
-   var postData = '';
-   req.on('data', function(chunk) {
+    console.log("GET")
+	} 
+  else if (request.method == 'POST') {
+    console.log("POST")
+    var postData = '';
+    request.on('data', function(chunk) {
     postData += chunk.toString();
    });
-   req.on('end', function() {
-    console.log("Got POST data:");
-    console.log(JSON.parse(postData));
-    messages.push(postData.message);
+    request.on('end', function() {
+      console.log("Got POST data:");
+      console.log(JSON.parse(postData));
+      var message = JSON.parse(postData).message;
+      messages.push(message);
+      response.end(JSON.stringify(messages));
    });
   }
 };
